@@ -4,6 +4,7 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 
+use clap::{App, Arg};
 use std::io::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -33,7 +34,19 @@ struct ProjectResponse {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let username = std::env::args().last().unwrap();
+    let matches = App::new(env!("APP_NAME"))
+        .version(env!("VERSION"))
+        .author(env!("AUTHOR_EMAIL"))
+        .about("Download a bunch of art for wallpaper from art station.")
+        .arg(
+            Arg::with_name("username")
+                .help("Provide this to rerun a previous configuration")
+                .index(1)
+                .required(true),
+        )
+        .get_matches();
+
+    let username: String = matches.value_of("username").unwrap().to_string();
     let client = Client::new();
     let projects_url = format!(
         "https://www.artstation.com/users/{}/projects.json",
