@@ -7,8 +7,27 @@ I'll probably never use it again.
 ## Usage
 
 ```bash
-cargo run artist-name
+art-station-i-guess artist-name
 ```
+
+
+## Installing
+
+First tap my homebrew repo
+
+``` shell
+brew tap PurpleBooth/repo
+```
+
+Next install the binary
+
+``` shell
+brew install art-station-i-guess
+```
+
+You can also download the [latest
+release](https://github.com/PurpleBooth/art-station-i-guess/releases/latest)
+and run it.
 
 ## License
 
