@@ -22,7 +22,7 @@ brew tap PurpleBooth/repo
 Next install the binary
 
 ``` shell
-brew install art-station-i-guess
+brew install PurpleBooth/repo/art-station-i-guess
 ```
 
 You can also download the [latest
