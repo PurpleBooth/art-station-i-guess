@@ -1,9 +1,8 @@
-on:
+'on':
   push:
     branches:
-      - "*"
-  pull_request: ~
-
+      - '*'
+  pull_request: null
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -12,27 +11,27 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: '${{ runner.os }}-cargo-registry-${{ hashFiles(''**/Cargo.lock'') }}'
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+          key: '${{ runner.os }}-cargo-index-${{ hashFiles(''**/Cargo.lock'') }}'
       - uses: actions/cache@v1
         with:
           path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: >-
+            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock')
+            }}
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           override: true
-
       - uses: actions-rs/cargo@v1
         with:
           command: check
-
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: '${{ matrix.os }}'
     strategy:
       matrix:
         include:
@@ -44,30 +43,29 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: '${{ runner.os }}-cargo-registry-${{ hashFiles(''**/Cargo.lock'') }}'
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+          key: '${{ runner.os }}-cargo-index-${{ hashFiles(''**/Cargo.lock'') }}'
       - uses: actions/cache@v1
         with:
           path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: >-
+            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock')
+            }}
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           override: true
-
       - uses: actions-rs/cargo@v1
         with:
           command: test
-
       - uses: actions-rs/cargo@v1
         with:
           command: run
-          args: -- -h
-
+          args: '-- -h'
   lints:
     runs-on: ubuntu-latest
     steps:
@@ -75,83 +73,106 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: '${{ runner.os }}-cargo-registry-${{ hashFiles(''**/Cargo.lock'') }}'
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+          key: '${{ runner.os }}-cargo-index-${{ hashFiles(''**/Cargo.lock'') }}'
       - uses: actions/cache@v1
         with:
           path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: >-
+            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock')
+            }}
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           override: true
-          components: rustfmt, clippy
-
+          components: 'rustfmt, clippy'
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --all -- --check
-
+          args: '--all -- --check'
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings
+          args: '-- -D warnings'
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          lfs: true
+      - run: 'git fetch --depth=1 origin +refs/tags/*:refs/tags/*'
+      - id: get_repository_name
+        run: >-
+          echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" |
+          awk -F / '{print $2}' | sed -e "s/:refs//")
+      - id: get_previous_version
+        run: >-
+          echo ::set-output name=PREVIOUS_VERSION::$(git describe --abbrev=0
+          --tags)
+        shell: bash
+      - id: semvers
+        uses: WyriHaximus/github-action-next-semvers@master
+        with:
+          version: '${{ steps.get_previous_version.outputs.PREVIOUS_VERSION }}'
+      - run: mkdir -p ./version
+      - run: >-
+          echo ${{ steps.get_repository_name.outputs.v_minor }} >
+          ./version/version
+        if: '!contains(github.event.head_commit.message, ''BC BREAK'')'
+      - run: >-
+          echo ${{ steps.get_repository_name.outputs.v_major }} >
+          ./version/version
+        if: 'contains(github.event.head_commit.message, ''BC BREAK'')'
+      - uses: actions/upload-artifact@master
+        with:
+          name: version
+          path: ./version/version
   build:
-    needs: [lints, test, check]
-    runs-on: ${{ matrix.os }}
+    needs:
+      - version
+      - lints
+      - test
+      - check
+    runs-on: '${{ matrix.os }}'
     strategy:
       matrix:
         include:
           - os: macos-latest
             target: x86_64-apple-darwin
-            suffix: ""
+            suffix: ''
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            suffix: ""
+            suffix: ''
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            suffix: ".exe"
+            suffix: .exe
     steps:
       - uses: actions/checkout@master
         with:
           lfs: true
-      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-      - id: get_repository_name
-        run: echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
-      - id: get_previous_version
-        run: echo ::set-output name=PREVIOUS_VERSION::$(git describe --abbrev=0 --tags)
-        shell: bash
-      - id: semvers
-        uses: "WyriHaximus/github-action-next-semvers@master"
-        with:
-          version: ${{ steps.get_previous_version.outputs.PREVIOUS_VERSION }}
-      - run: mkdir -p ./version
-      - run: echo ${{ steps.get_repository_name.outputs.v_minor }} > ./version/version
-        if: "!contains(github.event.head_commit.message, 'BC BREAK')"
-      - run: echo ${{ steps.get_repository_name.outputs.v_major }} > ./version/version
-        if: "contains(github.event.head_commit.message, 'BC BREAK')"
-      - uses: actions/upload-artifact@master
+      - uses: actions/download-artifact@master
         with:
           name: version
-          path: ./version/version
       - id: get_version
-        run: echo ::set-output name=VERSION::$(cat ./version/version)
+        run: 'echo ::set-output name=VERSION::$(cat ./version/version)'
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: '${{ runner.os }}-cargo-registry-${{ hashFiles(''**/Cargo.lock'') }}'
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+          key: '${{ runner.os }}-cargo-index-${{ hashFiles(''**/Cargo.lock'') }}'
       - uses: actions/cache@v1
         with:
           path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: >-
+            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock')
+            }}
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -159,67 +180,96 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         env:
-          VERSION: ${{ steps.get_version.outputs.VERSION }}
-          REPOSITORY_NAME: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}
+          VERSION: '${{ steps.get_version.outputs.VERSION }}'
+          REPOSITORY_NAME: '${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}'
         with:
           command: build
-          args: --release
+          args: '--release'
       - uses: actions/upload-artifact@master
         with:
-          name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-${{ matrix.target }}
-          path: ./target/release/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}${{ matrix.suffix }}
+          name: >-
+            ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-${{
+            matrix.target }}
+          path: >-
+            ./target/release/${{
+            steps.get_repository_name.outputs.REPOSITORY_NAME }}${{
+            matrix.suffix }}
   release:
     if: github.ref == 'ref/head/master'
-    needs: [build]
+    needs:
+      - build
     runs-on: ubuntu-latest
     steps:
       - id: get_repository_name
-        run: echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
+        run: >-
+          echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" |
+          awk -F / '{print $2}' | sed -e "s/:refs//")
         shell: bash
       - uses: actions/download-artifact@master
         with:
           name: version
       - id: get_version
-        run: echo ::set-output name=VERSION::$(cat ./version/version)
+        run: 'echo ::set-output name=VERSION::$(cat ./version/version)'
       - uses: actions/download-artifact@master
         with:
-          name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-unknown-linux-gnu
+          name: >-
+            ${{ steps.get_repository_name.outputs.REPOSITORY_NAME
+            }}-x86_64-unknown-linux-gnu
       - uses: actions/download-artifact@master
         with:
-          name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-apple-darwin
+          name: >-
+            ${{ steps.get_repository_name.outputs.REPOSITORY_NAME
+            }}-x86_64-apple-darwin
       - uses: actions/download-artifact@master
         with:
-          name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-pc-windows-msvc
+          name: >-
+            ${{ steps.get_repository_name.outputs.REPOSITORY_NAME
+            }}-x86_64-pc-windows-msvc
       - id: create_release
         uses: actions/create-release@v1.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
-          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name: '${{ steps.get_version.outputs.VERSION }}'
+          release_name: 'Release ${{ steps.get_version.outputs.VERSION }}'
           draft: false
           prerelease: false
       - uses: actions/upload-release-asset@v1.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+          GITHUB_TOKEN: '${{ secrets.COMMITTER_TOKEN }}'
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-unknown-linux-gnu/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}
-          asset_name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-unknown-linux-gnu
+          upload_url: '${{ steps.create_release.outputs.upload_url }}'
+          asset_path: >-
+            ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME
+            }}-x86_64-unknown-linux-gnu/${{
+            steps.get_repository_name.outputs.REPOSITORY_NAME }}
+          asset_name: >-
+            ${{ steps.get_repository_name.outputs.REPOSITORY_NAME
+            }}-x86_64-unknown-linux-gnu
           asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+          GITHUB_TOKEN: '${{ secrets.COMMITTER_TOKEN }}'
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-apple-darwin/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}
-          asset_name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-apple-darwin
+          upload_url: '${{ steps.create_release.outputs.upload_url }}'
+          asset_path: >-
+            ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME
+            }}-x86_64-apple-darwin/${{
+            steps.get_repository_name.outputs.REPOSITORY_NAME }}
+          asset_name: >-
+            ${{ steps.get_repository_name.outputs.REPOSITORY_NAME
+            }}-x86_64-apple-darwin
           asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+          GITHUB_TOKEN: '${{ secrets.COMMITTER_TOKEN }}'
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-pc-windows-msvc/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}.exe
-          asset_name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-pc-windows-msvc.exe
+          upload_url: '${{ steps.create_release.outputs.upload_url }}'
+          asset_path: >-
+            ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME
+            }}-x86_64-pc-windows-msvc/${{
+            steps.get_repository_name.outputs.REPOSITORY_NAME }}.exe
+          asset_name: >-
+            ${{ steps.get_repository_name.outputs.REPOSITORY_NAME
+            }}-x86_64-pc-windows-msvc.exe
           asset_content_type: application/octet-stream
