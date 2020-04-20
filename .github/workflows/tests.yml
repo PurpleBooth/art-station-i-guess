@@ -144,11 +144,13 @@ jobs:
           lfs: true
       - id: get_repository_name
         run: echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
+        shell: bash
       - uses: actions/download-artifact@master
         with:
           name: version
       - id: get_version
         run: 'echo ::set-output "name=VERSION::$(cat ./version/version)"'
+        shell: bash
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/registry
@@ -191,6 +193,7 @@ jobs:
           name: version
       - id: get_version
         run: 'echo ::set-output name=VERSION::$(cat ./version/version)'
+        shell: bash
       - uses: actions/download-artifact@master
         with:
           name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-unknown-linux-gnu
