@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@master
         with:
           ref: master
-      - if: contains(github.event.pull_request.labels.*.name, 'dependencies') && github.pull_request.merged == 'true'
+      - if: contains(github.event.pull_request.labels.*.name, 'dependencies') && github.event.pull_request.merged == 'true'
         uses: mathieudutour/github-tag-action@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
