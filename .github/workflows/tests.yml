@@ -119,8 +119,8 @@ jobs:
     steps:
       - uses: actions/checkout@master
         with:
-          fetch-depth: 0
           lfs: true
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - id: get_repository_name
         run: echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
       - id: get_previous_version
