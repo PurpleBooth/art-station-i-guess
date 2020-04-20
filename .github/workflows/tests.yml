@@ -110,10 +110,12 @@ jobs:
           version: '${{ steps.get_previous_version.outputs.PREVIOUS_VERSION }}'
       - run: mkdir -p ./version
       - if: "!contains(github.event.head_commit.message, 'BC BREAK')"
-        run: |
-          echo ${{ steps.semvers.outputs.v_minor }} >./version/version
-      - run: |
-          echo ${{ steps.semvers.outputs.v_major }} > ./version/version
+        run: echo "$VERSION" >./version/version
+        env:
+          VERSION: ${{ steps.semvers.outputs.v_minor }}
+      - run: echo "$VERSION" > ./version/version
+        env:
+          VERSION: ${{ steps.semvers.outputs.v_major }}
         if: "contains(github.event.head_commit.message, 'BC BREAK')"
       - uses: actions/upload-artifact@master
         with:
