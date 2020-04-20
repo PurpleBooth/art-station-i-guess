@@ -1,7 +1,8 @@
 on:
   push:
-    tags:
+    branches:
       - "*"
+  pull_request: ~
 
 jobs:
   check:
@@ -112,7 +113,6 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
-
   build:
     needs: [lints, test, check]
     runs-on: ${{ matrix.os }}
@@ -135,8 +135,25 @@ jobs:
       - id: get_repository_name
         run: echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
         shell: bash
+      - id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@master"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - id: semvers
+        uses: "WyriHaximus/github-action-next-semvers@master"
+        with:
+          version: ${{ steps.previoustag.outputs.tag }}
+      - run: mkdir -p ./version
+      - run: echo ${{ steps.get_repository_name.outputs.v_minor }} > ./version/version
+        if: "!contains(github.event.head_commit.message, 'BC BREAK')"
+      - run: echo ${{ steps.get_repository_name.outputs.v_major }} > ./version/version
+        if: "contains(github.event.head_commit.message, 'BC BREAK')"
+      - uses: actions/upload-artifact@master
+        with:
+          name: version
+          path: ./version/version
       - id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        run: echo ::set-output name=VERSION::$(cat ./version/version)
       - uses: actions/cache@v1
         with:
           path: ~/.cargo/registry
@@ -167,14 +184,18 @@ jobs:
           name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-${{ matrix.target }}
           path: ./target/release/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}${{ matrix.suffix }}
   release:
+    if: {{ github.ref == 'ref/head/master' }}
     needs: [build]
     runs-on: ubuntu-latest
     steps:
       - id: get_repository_name
         run: echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
         shell: bash
+      - uses: actions/download-artifact@master
+        with:
+          name: version
       - id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        run: echo ::set-output name=VERSION::$(cat ./version/version)
       - uses: actions/download-artifact@master
         with:
           name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-unknown-linux-gnu
@@ -195,7 +216,7 @@ jobs:
           prerelease: false
       - uses: actions/upload-release-asset@v1.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-unknown-linux-gnu/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}
@@ -203,7 +224,7 @@ jobs:
           asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-apple-darwin/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}
@@ -211,23 +232,9 @@ jobs:
           asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-pc-windows-msvc/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}.exe
           asset_name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-pc-windows-msvc.exe
           asset_content_type: application/octet-stream
-  update-tap:
-    needs: [release]
-    runs-on: ubuntu-latest
-    steps:
-      - id: get_repository_name
-        run: echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
-        shell: bash
-      - uses: mislav/bump-homebrew-formula-action@v1.4
-        if: "!contains(github.ref, '-')" # skip prereleases
-        with:
-          formula-name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}
-          homebrew-tap: PurpleBooth/homebrew-repo
-        env:
-          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
