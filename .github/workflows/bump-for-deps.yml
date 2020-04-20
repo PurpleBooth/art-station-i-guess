@@ -1,0 +1,12 @@
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - if: contains(github.event.pull_request.labels.*.name, 'dependencies') && github.pull_request.merged == 'true'
+        uses: mathieudutour/github-tag-action@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
