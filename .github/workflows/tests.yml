@@ -107,10 +107,14 @@ jobs:
         with:
           version: '${{ steps.get_previous_version.outputs.PREVIOUS_VERSION }}'
       - run: mkdir -p ./version
-      - if: "!contains(github.event.head_commit.message, 'BC BREAK')"
+      - if: "!contains(github.event.head_commit.message, 'BC BREAK') && !contains(github.event.head_commit.message, 'Signed-off-by: dependabot-preview[bot] <support@dependabot.com>')"
         run: echo "$VERSION" >./version/version
         env:
           VERSION: ${{ steps.semvers.outputs.v_minor }}
+      - if: "contains(github.event.head_commit.message, 'Signed-off-by: dependabot-preview[bot] <support@dependabot.com>')"
+        run: echo "$VERSION" >./version/version
+        env:
+          VERSION: ${{ steps.semvers.outputs.v_patch }}
       - run: echo "$VERSION" > ./version/version
         env:
           VERSION: ${{ steps.semvers.outputs.v_major }}
@@ -214,7 +218,7 @@ jobs:
           prerelease: false
       - uses: actions/upload-release-asset@v1.0.1
         env:
-          GITHUB_TOKEN: '${{ secrets.COMMITTER_TOKEN }}'
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         with:
           upload_url: '${{ steps.create_release.outputs.upload_url }}'
           asset_path: ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-unknown-linux-gnu/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}
@@ -222,7 +226,7 @@ jobs:
           asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1.0.1
         env:
-          GITHUB_TOKEN: '${{ secrets.COMMITTER_TOKEN }}'
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         with:
           upload_url: '${{ steps.create_release.outputs.upload_url }}'
           asset_path: ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-apple-darwin/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}
@@ -230,7 +234,7 @@ jobs:
           asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1.0.1
         env:
-          GITHUB_TOKEN: '${{ secrets.COMMITTER_TOKEN }}'
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         with:
           upload_url: '${{ steps.create_release.outputs.upload_url }}'
           asset_path: ./${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-pc-windows-msvc/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}.exe
