@@ -237,7 +237,7 @@ jobs:
           asset_name:  ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-x86_64-pc-windows-msvc.exe
           asset_content_type: application/octet-stream
       - uses: mislav/bump-homebrew-formula-action@v1.4
-        if: !contains(github.ref, "-")
+        if: "!contains(github.ref, '-')"
         with:
           formula-name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}
           homebrew-tap: PurpleBooth/homebrew-repo
