@@ -122,15 +122,13 @@ jobs:
           lfs: true
       - id: get_repository_name
         run: echo ::set-output name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
+      - id: get_previous_version
+        run: echo ::set-output name=PREVIOUS_VERSION::$(git describe --abbrev=0 --tags)
         shell: bash
-      - id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@master"
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - id: semvers
         uses: "WyriHaximus/github-action-next-semvers@master"
         with:
-          version: ${{ steps.previoustag.outputs.tag }}
+          version: ${{ steps.get_previous_version.outputs.PREVIOUS_VERSION }}
       - run: mkdir -p ./version
       - run: echo ${{ steps.get_repository_name.outputs.v_minor }} > ./version/version
         if: "!contains(github.event.head_commit.message, 'BC BREAK')"
