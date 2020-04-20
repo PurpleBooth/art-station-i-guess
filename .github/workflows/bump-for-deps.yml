@@ -1,7 +1,7 @@
 on:
   pull_request:
     branches: [master]
-
+    types: [closed]
 jobs:
   build:
     runs-on: ubuntu-latest
