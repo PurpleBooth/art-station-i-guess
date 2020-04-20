@@ -184,7 +184,7 @@ jobs:
           name: ${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}-${{ matrix.target }}
           path: ./target/release/${{ steps.get_repository_name.outputs.REPOSITORY_NAME }}${{ matrix.suffix }}
   release:
-    if: {{ github.ref == 'ref/head/master' }}
+    if: github.ref == 'ref/head/master'
     needs: [build]
     runs-on: ubuntu-latest
     steps:
