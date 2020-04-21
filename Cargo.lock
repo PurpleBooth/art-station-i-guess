@@ -17,7 +17,7 @@ checksum = "d663a8e9a99154b5fb793032533f6328da35e23aac63d5c152279aa8ba356825"
 
 [[package]]
 name = "art-station-i-guess"
-version = "0.1.0"
+version = "0.7.0"
 dependencies = [
  "clap",
  "futures",

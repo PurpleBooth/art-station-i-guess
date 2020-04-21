@@ -32,12 +32,14 @@ struct ProjectResponse {
     assets: ProjectAssets,
 }
 
+use clap::{crate_authors, crate_version};
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let matches = App::new(env!("APP_NAME"))
-        .version(env!("VERSION"))
-        .author(env!("AUTHOR_EMAIL"))
-        .about("Download a bunch of art for wallpaper from art station.")
+    let matches = App::new(env!("CARGO_PKG_NAME"))
+        .version(crate_version!())
+        .author(crate_authors!())
+        .about(env!("CARGO_PKG_DESCRIPTION"))
         .arg(
             Arg::with_name("username")
                 .help("Provide this to rerun a previous configuration")
