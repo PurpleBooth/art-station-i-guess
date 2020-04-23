@@ -1,6 +1,6 @@
 [package]
 name = "art-station-i-guess"
-version = "0.9.3"
+version = "0.9.4"
 authors = ["Billie Thompson <billie@billiecodes.com>"]
 edition = "2018"
 description = "I needed to get some new wallpaper for my desktop so I made this throwaway script to download art from art station automatically rather than manually."
