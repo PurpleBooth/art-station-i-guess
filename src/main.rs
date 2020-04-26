@@ -81,15 +81,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let project_responses = join_all(project_requests)
         .await
         .into_iter()
-        .filter_map(Result::ok)
-        .map(|response| response.json::<ProjectResponse>());
+        .filter_map(|status| {
+            if let Ok(response) = status {
+                return Some(response.json::<ProjectResponse>());
+            }
+            None
+        });
 
     let projects = join_all(project_responses).await;
 
     let asset_url = projects
         .into_iter()
-        .filter_map(Result::ok)
-        .map(|x| x.assets)
+        .filter_map(|status| {
+            if let Ok(response) = status {
+                return Some(response.assets);
+            }
+
+            None
+        })
         .flatten()
         .map(|x| x.image_url)
         .collect::<Vec<_>>();
@@ -115,9 +124,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(file) => file,
         };
 
-        match file.write_all(&image_bytes) {
-            Err(why) => panic!("couldn't write to {}: {}", display, why),
-            Ok(_) => println!("successfully wrote to {}", display),
+        if let Err(why) = file.write_all(&image_bytes) {
+            panic!("couldn't write to {}: {}", display, why)
+        } else {
+            println!("successfully wrote to {}", display)
         }
     }
 

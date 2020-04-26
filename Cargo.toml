@@ -5,6 +5,10 @@ authors = ["Billie Thompson <billie@billiecodes.com>"]
 edition = "2018"
 description = "I needed to get some new wallpaper for my desktop so I made this throwaway script to download art from art station automatically rather than manually."
 license = "Creative Commons Zero v1.0 Universal"
+repository = "https://github.com/PurpleBooth/art-station-i-guess/"
+readme = "README.md"
+keywords = ["art station", "download", "web-programming::http-client"]
+categories = ["command-line-utilities"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
