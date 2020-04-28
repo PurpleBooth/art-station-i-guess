@@ -25,7 +25,7 @@ brew install PurpleBooth/repo/art-station-i-guess
 
 You can also download the [latest
 release](https://github.com/PurpleBooth/art-station-i-guess/releases/latest)
-and run it.
+and run it..
 
 ## License
 
