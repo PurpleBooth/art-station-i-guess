@@ -15,7 +15,17 @@ fn version_returned_by_long_flag() {
     let stderr = str::from_utf8(&output.stderr)
         .expect("Failed to convert stderr to a string, is it valid UTF-8?");
 
-    let expected_prefix = "art-station-i-guess ";
+    let expected_prefix = if std::env::current_exe()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .ends_with(".exe")
+    {
+        "art-station-i-guess.exe "
+    } else {
+        "art-station-i-guess "
+    };
+
     assert!(
         stdout.starts_with(expected_prefix),
         "Expected stdout to start with {:?}, instead got stdout: {:?} stderr: {:?}",
@@ -65,7 +75,17 @@ fn version_returned_by_short_flag() {
         stderr
     );
 
-    let expected_prefix = "art-station-i-guess ";
+    let expected_prefix = if std::env::current_exe()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .ends_with(".exe")
+    {
+        "art-station-i-guess.exe "
+    } else {
+        "art-station-i-guess "
+    };
+
     assert!(
         stdout.starts_with(expected_prefix),
         "Expected stdout to start with {:?}, instead got stdout: {:?} stderr: {:?}",
