@@ -28,7 +28,7 @@ lint:
 .PHONY: fmt
 ## Format what can be foramtted
 fmt:
-	rustup run nightly cargo fmt --all
+	rustup run nightly cargo fmt --all 
 	rustup run nightly cargo fix --allow-dirty
 
 .PHONY: clean

@@ -1,7 +1,7 @@
 [package]
 name = "art-station-i-guess"
 version = "0.11.2"
-authors = ["Billie Thompson <billie@billiecodes.com>"]
+authors = ["Billie Thompson <billie+art-station-i-guess@billiecodes.com>"]
 edition = "2018"
 description = "I needed to get some new wallpaper for my desktop so I made this throwaway script to download art from art station automatically rather than manually."
 license = "Creative Commons Zero v1.0 Universal"
@@ -18,3 +18,7 @@ tokio = { version = "0.2", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 futures = { version = "0.3" }
 clap = "~2.33"
+[dev-dependencies]
+itertools = "0.9.0"
+pretty_assertions = "0.6.1"
+tempfile = "3.1.0"
