@@ -17,7 +17,7 @@ checksum = "b585a98a234c46fc563103e9278c9391fde1f4e6850334da895d27edb9580f62"
 
 [[package]]
 name = "art-station-i-guess"
-version = "0.13.26"
+version = "0.13.27"
 dependencies = [
  "clap",
  "futures",
@@ -60,9 +60,9 @@ checksum = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
 
 [[package]]
 name = "bumpalo"
-version = "3.2.1"
+version = "3.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12ae9db68ad7fac5fe51304d20f016c911539251075a214f8e663babefa35187"
+checksum = "5356f1d23ee24a1f785a56d1d1a5f0fd5b0f6a0c0fb2412ce11da71649ab78f6"
 
 [[package]]
 name = "bytes"
