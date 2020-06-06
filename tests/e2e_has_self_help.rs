@@ -6,6 +6,7 @@ use itertools::join;
 fn help_returned_by_long_flag() {
     let output = Command::new("cargo")
         .arg("run")
+        .arg("--locked")
         .arg("--quiet")
         .arg("--")
         .arg("--help")
@@ -33,6 +34,7 @@ USAGE:
 fn help_returned_by_short_flag() {
     let output = Command::new("cargo")
         .arg("run")
+        .arg("--locked")
         .arg("--quiet")
         .arg("--")
         .arg("-h")
@@ -60,6 +62,7 @@ USAGE:
 fn short_help_returned_when_a_wrong_message_commands_passed() {
     let output = Command::new("cargo")
         .arg("run")
+        .arg("--locked")
         .arg("--quiet")
         .arg("--")
         .arg("--banana")

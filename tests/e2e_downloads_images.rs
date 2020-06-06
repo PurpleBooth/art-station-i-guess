@@ -21,6 +21,7 @@ fn some_images_are_downloaded() {
     let output = Command::new("cargo")
         .current_dir(&temp_dir)
         .arg("run")
+        .arg("--locked")
         .arg("--quiet")
         .arg("--manifest-path")
         .arg(calculate_cargo_toml_path())
