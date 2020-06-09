@@ -15,7 +15,7 @@ fn version_returned_by_long_flag() {
     let stderr = str::from_utf8(&output.stderr)
         .expect("Failed to convert stderr to a string, is it valid UTF-8?");
 
-    let expected_name = "c";
+    let expected_name = "art-station-i-guess";
     assert!(
         stdout.contains(expected_name),
         "Expected stdout to contain {:?}, instead got stdout: {:?} stderr: {:?}",
