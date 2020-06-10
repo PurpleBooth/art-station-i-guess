@@ -47,18 +47,20 @@ jobs:
   automerge-label-rebase:
     runs-on: ubuntu-latest
     steps:
-      - name: automerge-rebase
+      - name: automerge
         uses: "pascalgn/automerge-action@v0.8.4"
         env:
           GITHUB_TOKEN: "${{ secrets.COMMITTER_TOKEN }}"
           MERGE_METHOD: rebase
           MERGE_RETRY_SLEEP: "100000"
+          MERGE_LABELS: automerge-rebase
   automerge-label-squash:
     runs-on: ubuntu-latest
     steps:
-      - name: automerge-squash
+      - name: automerge
         uses: "pascalgn/automerge-action@v0.8.4"
         env:
           GITHUB_TOKEN: "${{ secrets.COMMITTER_TOKEN }}"
           MERGE_METHOD: squash
           MERGE_RETRY_SLEEP: "100000"
+          MERGE_LABELS: automerge-squash
