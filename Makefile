@@ -11,27 +11,27 @@ show-help:
 .PHONY: test
 ## Test it was built ok
 test:
-	RUST_BACKTRACE=1 rustup run stable cargo test --locked
+	RUST_BACKTRACE=1 cargo test --locked
 
 .PHONY: build
 ## Test it was built ok
 build:
-	rustup run stable cargo build --locked
+	cargo build --locked
 
 .PHONY: lint
 ## Lint it
 lint:
-	rustup run nightly cargo fmt --all -- --check
-	rustup run nightly cargo clippy --all-targets --all-features -- -D warnings -Dclippy::style -D clippy::pedantic -D clippy::cargo -A clippy::multiple_crate_versions
-	rustup run stable cargo check
+	cargo fmt --all -- --check
+	cargo clippy --all-targets --all-features -- -D warnings -Dclippy::style -D clippy::pedantic -D clippy::cargo -A clippy::multiple_crate_versions
+	cargo check
 
 .PHONY: fmt
 ## Format what can be foramtted
 fmt:
-	rustup run nightly cargo fmt --all 
-	rustup run nightly cargo fix --allow-dirty
+	cargo fmt --all 
+	cargo fix --allow-dirty
 
 .PHONY: clean
 ## Clean the build directory
 clean:
-	rustup run stable cargo clean
+	cargo clean
