@@ -1,23 +1,35 @@
 [package]
 name = "art-station-i-guess"
-version = "0.78.0"
-authors = ["Billie Thompson <billie+art-station-i-guess@billiecodes.com>"]
+version = "0.80.0"
+authors = [
+  "Billie Thompson <billie+art-station-i-guess@billiecodes.com>"
+]
 edition = "2018"
 description = "I needed to get some new wallpaper for my desktop so I made this throwaway script to download art from art station automatically rather than manually."
 license = "Creative Commons Zero v1.0 Universal"
 repository = "https://github.com/PurpleBooth/art-station-i-guess/"
 readme = "README.md"
-keywords = ["art station", "download", "web-programming::http-client"]
-categories = ["command-line-utilities"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+keywords = [ "art station", "download", "web-programming::http-client" ]
+categories = [ "command-line-utilities" ]
 
 [dependencies]
-reqwest = { version = "0.10", features = ["json"] }
-tokio = { version = "0.2", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-futures = { version = "0.3" }
 clap = "~2.33"
+
+  [dependencies.reqwest]
+  version = "0.10"
+  features = [ "json" ]
+
+  [dependencies.tokio]
+  version = "0.2"
+  features = [ "full" ]
+
+  [dependencies.serde]
+  version = "1.0"
+  features = [ "derive" ]
+
+  [dependencies.futures]
+  version = "0.3"
+
 [dev-dependencies]
 itertools = "0.9.0"
 pretty_assertions = "0.6.1"
