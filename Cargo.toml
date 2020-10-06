@@ -15,7 +15,7 @@ categories = [ "command-line-utilities" ]
 [dependencies]
 pin-project = "0.4.26"
 clap = "~2.33"
-futures = "0.3.5"
+futures = "0.3.6"
 
   [dependencies.reqwest]
   version = "0.10"
