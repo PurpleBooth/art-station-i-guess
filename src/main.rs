@@ -1,11 +1,11 @@
-use futures::future::join_all;
+use std::fs::File;
+use std::io::prelude::*;
 
+use clap::{crate_authors, crate_version};
+use clap::{App, Arg};
+use futures::future::join_all;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use std::fs::File;
-
-use clap::{App, Arg};
-use std::io::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct ProjectsItem {
@@ -31,8 +31,6 @@ type ProjectAssets = Vec<ProjectAsset>;
 struct ProjectResponse {
     assets: ProjectAssets,
 }
-
-use clap::{crate_authors, crate_version};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -61,7 +59,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .json::<ProjectsResponse>()
         .await?;
 
-    let project_urls = project_list
+    let client = Client::new();
+    let project_requests = project_list
         .data
         .into_iter()
         .map(|project| {
@@ -70,11 +69,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 project.hash_id
             )
         })
-        .collect::<Vec<_>>();
-
-    let client = Client::new();
-    let project_requests = project_urls
-        .into_iter()
         .map(|url| client.get(&url).send())
         .collect::<Vec<_>>();
 
