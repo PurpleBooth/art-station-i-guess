@@ -13,7 +13,7 @@ keywords = [ "art station", "download", "web-programming::http-client" ]
 categories = [ "command-line-utilities" ]
 
 [dependencies]
-pin-project = "1.0.2"
+pin-project = "1.0.3"
 clap = "~2.33"
 futures = "0.3.8"
 
