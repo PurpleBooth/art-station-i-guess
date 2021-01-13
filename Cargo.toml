@@ -1,6 +1,6 @@
 [package]
 name = "art-station-i-guess"
-version = "0.80.37"
+version = "0.80.40"
 authors = [
   "Billie Thompson <billie+art-station-i-guess@billiecodes.com>"
 ]
