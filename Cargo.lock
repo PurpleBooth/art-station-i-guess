@@ -11,7 +11,7 @@ dependencies = [
 
 [[package]]
 name = "art-station-i-guess"
-version = "0.80.37"
+version = "0.80.43"
 dependencies = [
  "clap",
  "futures",
