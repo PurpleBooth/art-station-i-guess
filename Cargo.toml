@@ -26,7 +26,7 @@ futures = "0.3.13"
   features = [ "full" ]
 
   [dependencies.serde]
-  version = "1.0.124"
+  version = "1.0.125"
   features = [ "derive" ]
 
 [dev-dependencies]
