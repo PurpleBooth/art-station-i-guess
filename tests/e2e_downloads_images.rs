@@ -69,9 +69,12 @@ fn some_images_are_downloaded() {
         .expect("failed to read temp dir")
         .iter()
         .filter(|x| {
-            x.as_os_str()
-                .to_str()
-                .map_or(false, |f| f.ends_with(".jpg"))
+            x.as_os_str().to_str().map_or(false, |f| {
+                f.rsplit('.')
+                    .next()
+                    .map(|ext| ext.eq_ignore_ascii_case(".jpg"))
+                    == Some(true)
+            })
         })
         .count();
 
